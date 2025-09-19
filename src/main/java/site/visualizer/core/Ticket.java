@@ -1,4 +1,4 @@
-package site.visualizer;
+package site.visualizer.core;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
