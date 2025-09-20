@@ -18,8 +18,14 @@ public class Vendor extends Thread {
         this.ticketPool = ticketPool;
     }
 
+    /**
+     * Produced a new ticket and then adds it to the buffer and also the vendor's produced list.
+     * @throws InterruptedException since addTicket uses put() which is a blocking method.
+     */
     public void produceAndAddTicket() throws InterruptedException {
-        producedTickets.add(ticketPool.addTicket());
+        Ticket newTicket = new Ticket();
+        ticketPool.addTicket(newTicket);
+        producedTickets.add(newTicket);
     }
 
     public void printProducedTicketInfo() {

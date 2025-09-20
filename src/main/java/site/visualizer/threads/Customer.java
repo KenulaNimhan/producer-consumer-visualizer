@@ -26,6 +26,10 @@ public class Customer extends Thread{
         return purchasedCount == ticketCap;
     }
 
+    /**
+     * removes a ticket from the buffer and adds it to the customer's purchased list.
+     * @throws Exception if cap is reached and is not allowed to buy any more tickets.
+     */
     public void buyTicket() throws Exception {
         if (hasReachedLimit()) throw new Exception("cannot buy more tickets.");
         var boughtTicket = ticketPool.removeTicket();
@@ -33,7 +37,7 @@ public class Customer extends Thread{
         purchasedTickets.addLast(boughtTicket);
         purchasedCount++;
 
-        System.out.println(name+" bought "+boughtTicket.getId()+" at "+boughtTicket.getProducedTime());
+        System.out.println(name+" bought ticket "+boughtTicket.getId()+" at "+boughtTicket.getProducedTime());
     }
 
     public void printBoughtTicketInfo() {
