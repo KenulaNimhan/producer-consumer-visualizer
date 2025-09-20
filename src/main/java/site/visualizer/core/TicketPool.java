@@ -5,18 +5,25 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class TicketPool {
     private final LinkedBlockingQueue<Ticket> ticketPool;
 
-    TicketPool(int ticketPoolCap) {
+    public TicketPool(int ticketPoolCap) {
         ticketPool = new LinkedBlockingQueue<>(ticketPoolCap);
     }
 
-    public Ticket addTicket() {
+    public Ticket addTicket() throws InterruptedException {
         Ticket newTicket = new Ticket();
-        ticketPool.add(newTicket);
+        ticketPool.put(newTicket);
 
         return newTicket;
     }
 
-    public Ticket removeTicket() {
-        return ticketPool.remove();
+    public Ticket removeTicket() throws InterruptedException {
+        return ticketPool.take();
+    }
+
+    public void printTicketsInPool() {
+        if (ticketPool.isEmpty()) System.out.println("no tickets in the buffer");
+        for (Ticket ticket: ticketPool) {
+            System.out.print(ticket);
+        }
     }
 }

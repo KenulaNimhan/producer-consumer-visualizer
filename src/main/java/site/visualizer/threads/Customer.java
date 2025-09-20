@@ -5,12 +5,13 @@ import site.visualizer.core.TicketPool;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-public class Customer implements Runnable{
+public class Customer extends Thread{
     private final String name;
     private final int ticketCap;
     private final List<Ticket> purchasedTickets;
-    private int purchasedCount;
+    private int purchasedCount=0;
 
     private final TicketPool ticketPool;
 
@@ -31,19 +32,26 @@ public class Customer implements Runnable{
         boughtTicket.setBoughtBuy(Thread.currentThread().getName());
         purchasedTickets.addLast(boughtTicket);
         purchasedCount++;
+
+        System.out.println(name+" bought "+boughtTicket.getId()+" at "+boughtTicket.getProducedTime());
     }
 
     public void printBoughtTicketInfo() {
-        for (Ticket ticket: purchasedTickets) System.out.println(ticket);
+        System.out.println("tickets bought by "+name);
+        System.out.println(purchasedCount);
+        for (Ticket ticket: purchasedTickets) System.out.print(ticket);
     }
 
     @Override
     public void run() {
+        Thread.currentThread().setName(name);
         while (!hasReachedLimit()) {
             try {
                 buyTicket();
+            } catch (NoSuchElementException e) {
+                System.out.println("tickets are not added yet");
             } catch (Exception e) {
-                System.out.println("cannot buy anymore tickets");;
+                System.out.println(name+e.getMessage());
             }
         }
     }
