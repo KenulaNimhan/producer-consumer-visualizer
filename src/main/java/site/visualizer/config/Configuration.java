@@ -3,18 +3,23 @@ package site.visualizer.config;
 public class Configuration {
     private int
             totalNoOfTickets,
+            bufferCap,
             vendorCount,
             customerCount,
             capPerConsumer,
             releaseRate,
             retrievalRate;
 
-    Configuration(){}
+    public Configuration(){}
 
     // GETTERS
 
     public int getTotalNoOfTickets() {
         return totalNoOfTickets;
+    }
+
+    public int getBufferCap() {
+        return bufferCap;
     }
 
     public int getVendorCount() {
@@ -43,6 +48,10 @@ public class Configuration {
         this.totalNoOfTickets = totalNoOfTickets;
     }
 
+    public void setBufferCap(int bufferCap) {
+        this.bufferCap = bufferCap;
+    }
+
     public void setVendorCount(int vendorCount) {
         this.vendorCount = vendorCount;
     }
@@ -61,5 +70,10 @@ public class Configuration {
 
     public void setRetrievalRate(int retrievalRate) {
         this.retrievalRate = retrievalRate;
+    }
+
+    // HELPER METHOD
+    public boolean isValid() {
+        return (customerCount*capPerConsumer) <= totalNoOfTickets;
     }
 }
