@@ -25,6 +25,9 @@ public class Vendor extends Thread {
         Ticket newTicket = new Ticket();
         ticketPool.addTicket(newTicket);
         producedTickets.add(newTicket);
+
+        System.out.println("\u001B[33m"+name+" produced ticket "+newTicket.getId()+" at "+newTicket.getProducedTime()+"\u001B[0m");
+
     }
 
     public void printProducedTicketInfo() {
@@ -38,7 +41,7 @@ public class Vendor extends Thread {
         for (int i=0; i<quota; i++) {
             try {
                 produceAndAddTicket();
-                Thread.sleep(200);
+                Thread.sleep(250);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

@@ -33,15 +33,12 @@ public class Configurator {
                 System.out.println(prompt);
                 System.out.print("( "+range[0]+" - "+range[1]+" ): ");
                 var input = scan.nextInt();
-                if (input < range[0] || input > range[1]) {
-                    System.out.println("out of range");
-                    continue;
-                }
-                return input;
+                if (input > range[0] && input < range[1]) return input;
+                System.out.println("\u001B[31mout of range \u001B[0m");
             } catch (InputMismatchException e) {
-                System.out.println("invalid input");
+                System.out.println("\u001B[31minvalid input \u001B[0m");
+                scan.nextLine();
             }
         }
     }
-
 }

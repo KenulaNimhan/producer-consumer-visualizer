@@ -37,7 +37,7 @@ public class Customer extends Thread{
         purchasedTickets.addLast(boughtTicket);
         purchasedCount++;
 
-        System.out.println(name+" bought ticket "+boughtTicket.getId()+" at "+boughtTicket.getProducedTime());
+        System.out.println("\u001B[34m"+name+" bought ticket "+boughtTicket.getId()+" at "+boughtTicket.getProducedTime()+"\u001B[0m");
     }
 
     public void printBoughtTicketInfo() {
@@ -52,7 +52,7 @@ public class Customer extends Thread{
         while (!hasReachedLimit()) {
             try {
                 buyTicket();
-                Thread.sleep(200);
+                Thread.sleep(250);
             } catch (NoSuchElementException e) {
                 System.out.println("tickets are not added yet");
             } catch (Exception e) {

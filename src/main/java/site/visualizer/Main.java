@@ -24,13 +24,15 @@ public class Main {
         Vendor[] vendors = new Vendor[data.getVendorCount()];
 
         for (int i=0; i<data.getVendorCount(); i++) {
-            vendors[i] = new Vendor("vendor "+i, data.getTotalNoOfTickets()/data.getVendorCount(), ticketPool);
+            int vendorID = i+1;
+            vendors[i] = new Vendor("vendor "+vendorID, data.getTotalNoOfTickets()/data.getVendorCount(), ticketPool);
         }
 
         Customer[] customers = new Customer[data.getCustomerCount()];
 
         for (int i=0; i<data.getCustomerCount(); i++) {
-            customers[i] = new Customer("customer "+i, data.getCapPerCustomer(), ticketPool);
+            int customerID = i+1;
+            customers[i] = new Customer("customer "+customerID, data.getCapPerCustomer(), ticketPool);
         }
 
         List<Thread> threads = new ArrayList<>();

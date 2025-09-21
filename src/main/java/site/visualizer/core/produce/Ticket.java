@@ -13,7 +13,6 @@ public class Ticket {
         id = String.valueOf(count.incrementAndGet());
         producedAt = String.valueOf(LocalTime.now());
         producedBy = Thread.currentThread().getName();
-        System.out.println(producedBy+" produced ticket "+id+" at "+producedAt);
     }
 
     // GETTERS
