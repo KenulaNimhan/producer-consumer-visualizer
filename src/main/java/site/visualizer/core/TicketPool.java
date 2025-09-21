@@ -1,5 +1,7 @@
 package site.visualizer.core;
 
+import site.visualizer.core.produce.Ticket;
+
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**

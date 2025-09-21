@@ -1,6 +1,6 @@
-package site.visualizer.threads;
+package site.visualizer.core.consume;
 
-import site.visualizer.core.Ticket;
+import site.visualizer.core.produce.Ticket;
 import site.visualizer.core.TicketPool;
 
 import java.util.ArrayList;
@@ -52,6 +52,7 @@ public class Customer extends Thread{
         while (!hasReachedLimit()) {
             try {
                 buyTicket();
+                Thread.sleep(200);
             } catch (NoSuchElementException e) {
                 System.out.println("tickets are not added yet");
             } catch (Exception e) {

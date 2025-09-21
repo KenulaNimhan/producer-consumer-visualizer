@@ -1,6 +1,5 @@
-package site.visualizer.threads;
+package site.visualizer.core.produce;
 
-import site.visualizer.core.Ticket;
 import site.visualizer.core.TicketPool;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ public class Vendor extends Thread {
     }
 
     /**
-     * Produced a new ticket and then adds it to the buffer and also the vendor's produced list.
+     * Produces a new ticket and then adds it to the buffer and also the vendor's produced list.
      * @throws InterruptedException since addTicket uses put() which is a blocking method.
      */
     public void produceAndAddTicket() throws InterruptedException {
@@ -39,6 +38,7 @@ public class Vendor extends Thread {
         for (int i=0; i<quota; i++) {
             try {
                 produceAndAddTicket();
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
