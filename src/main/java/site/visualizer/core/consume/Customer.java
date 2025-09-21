@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 public class Customer extends Thread{
     private final String name;
     private final int ticketCap;
-    private final List<Ticket> purchasedTickets;
+    private final List<Ticket> purchasedTickets = new ArrayList<>();
     private int purchasedCount=0;
 
     private final TicketPool ticketPool;
@@ -18,7 +18,6 @@ public class Customer extends Thread{
     public Customer(String name, int ticketCap, TicketPool ticketPool) {
         this.name = name;
         this.ticketCap = ticketCap;
-        purchasedTickets = new ArrayList<>(ticketCap);
         this.ticketPool = ticketPool;
     }
 
