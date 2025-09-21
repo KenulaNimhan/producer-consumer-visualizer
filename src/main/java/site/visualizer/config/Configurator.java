@@ -21,19 +21,19 @@ public class Configurator {
 
     public Configuration configure() {
         for (Config config: Config.values()) {
-            var userInput = askFor(config.getPrompt(), config.getRange());
+            var userInput = askFor(config);
             actionToSetConfig.get(config).accept(userInput);
         }
         return this.configuration;
     }
 
-    private int askFor(String prompt, int[] range) {
+    private int askFor(Config config) {
         while (true) {
             try {
-                System.out.println(prompt);
-                System.out.print("( "+range[0]+" - "+range[1]+" ): ");
+                System.out.println(config.getPrompt());
+                System.out.print("( "+config.getRange()[0]+" - "+config.getRange()[1]+" ): ");
                 var input = scan.nextInt();
-                if (input > range[0] && input < range[1]) return input;
+                if (config.rangeAccepts(input)) return input;
                 System.out.println("\u001B[31mout of range \u001B[0m");
             } catch (InputMismatchException e) {
                 System.out.println("\u001B[31minvalid input \u001B[0m");

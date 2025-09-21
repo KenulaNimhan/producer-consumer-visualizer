@@ -25,4 +25,8 @@ public enum Config {
     public int[] getRange() {
         return range;
     }
+
+    public boolean rangeAccepts(int val) {
+        return (val>=this.getRange()[0] && val<=this.getRange()[1]);
+    }
 }
