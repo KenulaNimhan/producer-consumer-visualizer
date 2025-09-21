@@ -6,7 +6,7 @@ public class Configuration {
             bufferCap,
             vendorCount,
             customerCount,
-            capPerConsumer,
+            capPerCustomer,
             releaseRate,
             retrievalRate;
 
@@ -30,8 +30,8 @@ public class Configuration {
         return customerCount;
     }
 
-    public int getCapPerConsumer() {
-        return capPerConsumer;
+    public int getCapPerCustomer() {
+        return capPerCustomer;
     }
 
     public int getReleaseRate() {
@@ -60,8 +60,8 @@ public class Configuration {
         this.customerCount = customerCount;
     }
 
-    public void setCapPerConsumer(int capPerConsumer) {
-        this.capPerConsumer = capPerConsumer;
+    public void setCapPerCustomer(int capPerCustomer) {
+        this.capPerCustomer = capPerCustomer;
     }
 
     public void setReleaseRate(int releaseRate) {
@@ -74,6 +74,6 @@ public class Configuration {
 
     // HELPER METHOD
     public boolean isValid() {
-        return (customerCount*capPerConsumer) <= totalNoOfTickets;
+        return (customerCount*capPerCustomer) <= totalNoOfTickets;
     }
 }

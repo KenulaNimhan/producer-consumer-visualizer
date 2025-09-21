@@ -1,9 +1,10 @@
 package site.visualizer;
 
 import site.visualizer.config.Configuration;
+import site.visualizer.config.Configurator;
+import site.visualizer.core.consume.Customer;
 import site.visualizer.core.TicketPool;
-import site.visualizer.threads.Customer;
-import site.visualizer.threads.Vendor;
+import site.visualizer.core.produce.Vendor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,36 +16,21 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        System.out.print("How many tickets need to be produced: ");
-        int totalTickets = scan.nextInt();
-        System.out.print("No. of vendors: ");
-        int vendorCount = scan.nextInt();
-        System.out.print("No. of customers: ");
-        int customerCount = scan.nextInt();
-        System.out.print("Max no. of tickets a customer can have: ");
-        int capPerCustomer = scan.nextInt();
-        System.out.print("Capacity of the buffer: ");
-        int bufferCap = scan.nextInt();
-
-        Configuration data = new Configuration();
-        data.setTotalNoOfTickets(totalTickets);
-        data.setVendorCount(vendorCount);
-        data.setCustomerCount(customerCount);
-        data.setCapPerConsumer(capPerCustomer);
-        data.setBufferCap(bufferCap);
+        Configurator configurator = new Configurator();
+        Configuration data = configurator.configure();
 
         TicketPool ticketPool = new TicketPool(data.getBufferCap());
 
-        Vendor[] vendors = new Vendor[vendorCount];
+        Vendor[] vendors = new Vendor[data.getVendorCount()];
 
-        for (int i=0; i<vendorCount; i++) {
-            vendors[i] = new Vendor("vendor "+i, totalTickets/vendorCount, ticketPool);
+        for (int i=0; i<data.getVendorCount(); i++) {
+            vendors[i] = new Vendor("vendor "+i, data.getTotalNoOfTickets()/data.getVendorCount(), ticketPool);
         }
 
-        Customer[] customers = new Customer[customerCount];
+        Customer[] customers = new Customer[data.getCustomerCount()];
 
-        for (int i=0; i<customerCount; i++) {
-            customers[i] = new Customer("customer "+i, capPerCustomer, ticketPool);
+        for (int i=0; i<data.getCustomerCount(); i++) {
+            customers[i] = new Customer("customer "+i, data.getCapPerCustomer(), ticketPool);
         }
 
         List<Thread> threads = new ArrayList<>();
