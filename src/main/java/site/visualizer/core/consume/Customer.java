@@ -2,6 +2,9 @@ package site.visualizer.core.consume;
 
 import site.visualizer.core.produce.Ticket;
 import site.visualizer.core.TicketPool;
+import site.visualizer.event.EventType;
+import site.visualizer.event.TicketEvent;
+import site.visualizer.event.TicketEventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +15,15 @@ public class Customer extends Thread {
     private final int ticketCap;
     private final List<Ticket> purchasedTickets = new ArrayList<>();
     private int purchasedCount=0;
+    private final TicketEventPublisher publisher;
 
     private final TicketPool ticketPool;
 
-    public Customer(String name, int ticketCap, TicketPool ticketPool) {
+    public Customer(String name, int ticketCap, TicketPool ticketPool, TicketEventPublisher publisher) {
         this.name = name;
         this.ticketCap = ticketCap;
         this.ticketPool = ticketPool;
+        this.publisher = publisher;
     }
 
     public boolean hasReachedLimit() {
@@ -37,6 +42,8 @@ public class Customer extends Thread {
         purchasedCount++;
 
         System.out.println("\u001B[34m"+name+" bought ticket "+boughtTicket.getId()+" at "+boughtTicket.getProducedTime()+"\u001B[0m");
+        TicketEvent newEvent = new TicketEvent(EventType.CONSUMED, boughtTicket, ticketPool.getSize());
+        publisher.sendEvent(newEvent);
     }
 
     public void printBoughtTicketInfo() {

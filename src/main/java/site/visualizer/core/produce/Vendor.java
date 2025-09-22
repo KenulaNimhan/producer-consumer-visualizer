@@ -1,6 +1,9 @@
 package site.visualizer.core.produce;
 
 import site.visualizer.core.TicketPool;
+import site.visualizer.event.EventType;
+import site.visualizer.event.TicketEvent;
+import site.visualizer.event.TicketEventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +13,13 @@ public class Vendor extends Thread {
     private final List<Ticket> producedTickets = new ArrayList<>();
     private final int quota;
     private final TicketPool ticketPool;
+    private final TicketEventPublisher publisher;
 
-    public Vendor(String name, int quota, TicketPool ticketPool) {
+    public Vendor(String name, int quota, TicketPool ticketPool, TicketEventPublisher publisher) {
         this.name = name;
         this.quota = quota;
         this.ticketPool = ticketPool;
+        this.publisher = publisher;
     }
 
     /**
@@ -27,7 +32,8 @@ public class Vendor extends Thread {
         producedTickets.add(newTicket);
 
         System.out.println("\u001B[33m"+name+" produced ticket "+newTicket.getId()+" at "+newTicket.getProducedTime()+"\u001B[0m");
-
+        TicketEvent newEvent = new TicketEvent(EventType.PRODUCED, newTicket, ticketPool.getSize());
+        publisher.sendEvent(newEvent);
     }
 
     public void printProducedTicketInfo() {

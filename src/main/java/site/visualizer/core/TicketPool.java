@@ -44,4 +44,8 @@ public class TicketPool {
             System.out.print(ticket);
         }
     }
+
+    public int getSize() {
+        return ticketPool.size();
+    }
 }
