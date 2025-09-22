@@ -9,7 +9,7 @@ public class Configurator {
     private final Scanner scan = new Scanner(System.in);
     private final Configuration configuration = new Configuration();
 
-    private final Map<Config, Consumer<Integer>> actionToSetConfig = Map.of(
+    private final Map<Config, Consumer<Integer>> configSetters = Map.of(
             Config.TOTAL_TICKETS, configuration::setTotalNoOfTickets,
             Config.BUFFER_CAP, configuration::setBufferCap,
             Config.VENDOR_COUNT, configuration::setVendorCount,
@@ -22,7 +22,7 @@ public class Configurator {
     public Configuration configure() {
         for (Config config: Config.values()) {
             var userInput = askFor(config);
-            actionToSetConfig.get(config).accept(userInput);
+            configSetters.get(config).accept(userInput);
         }
         return this.configuration;
     }

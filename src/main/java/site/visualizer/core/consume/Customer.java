@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class Customer extends Thread{
+public class Customer extends Thread {
     private final String name;
     private final int ticketCap;
     private final List<Ticket> purchasedTickets = new ArrayList<>();
