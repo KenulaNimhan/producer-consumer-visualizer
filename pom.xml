@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>site</groupId>
 	<artifactId>visualizer</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>concurrencyVisualizer</name>
-	<description>Concurrency Visualizer</description>
+	<version>0.1</version>
+	<name>producerConsumerVisualizer</name>
+	<description>Producer Consumer Pattern Visualizer</description>
 	<url/>
 	<licenses>
 		<license/>
