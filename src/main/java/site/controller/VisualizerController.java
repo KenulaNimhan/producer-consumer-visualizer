@@ -1,4 +1,4 @@
-package site.visualizer.controller;
+package site.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +16,10 @@ public class VisualizerController {
     }
 
     @PostMapping("start")
-    public ResponseEntity<String> runVisualizer(@RequestBody Configuration configuration) {
+    public ResponseEntity<String> runVisualizer(@RequestBody Configuration configuration) throws InterruptedException {
         String response = service.accept(configuration);
         if (response.equals("ok")) {
+            service.run(configuration);
             return ResponseEntity.ok("configuration is successful and running");
         } else {
             return ResponseEntity.internalServerError().body(response);

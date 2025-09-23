@@ -1,5 +1,6 @@
-package site.visualizer.core.produce;
+package site.visualizer.threads;
 
+import site.visualizer.core.Ticket;
 import site.visualizer.core.TicketPool;
 import site.visualizer.event.EventType;
 import site.visualizer.event.TicketEvent;

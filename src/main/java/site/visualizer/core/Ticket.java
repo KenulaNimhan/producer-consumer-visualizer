@@ -1,4 +1,4 @@
-package site.visualizer.core.produce;
+package site.visualizer.core;
 
 import java.time.LocalTime;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -9,7 +9,7 @@ public class Ticket {
     private final String id, producedAt, producedBy;
     private String boughtBuy;
 
-    Ticket() {
+    public Ticket() {
         id = String.valueOf(count.incrementAndGet());
         producedAt = String.valueOf(LocalTime.now());
         producedBy = Thread.currentThread().getName();
