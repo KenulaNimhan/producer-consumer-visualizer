@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import site.visualizer.config.Config;
 import site.visualizer.config.Configuration;
 import site.visualizer.core.TicketPool;
-import site.visualizer.core.consume.Customer;
-import site.visualizer.core.produce.Vendor;
+import site.visualizer.threads.Customer;
+import site.visualizer.threads.Vendor;
 import site.visualizer.event.TicketEventPublisher;
 
 import java.util.ArrayList;
