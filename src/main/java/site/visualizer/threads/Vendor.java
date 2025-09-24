@@ -32,11 +32,15 @@ public class Vendor extends Thread {
         ticketPool.addTicket(newTicket);
         producedTickets.add(newTicket);
 
-        System.out.println("\u001B[33m"+name+" produced ticket "+newTicket.getId()+" at "+newTicket.getProducedTime()+"\u001B[0m");
-        TicketEvent newEvent = new TicketEvent(EventType.PRODUCED, newTicket, ticketPool.getSize());
+        String eventDesc = name+" produced ticket "+newTicket.getId()+" at "+newTicket.getProducedTime();
+        System.out.println("\u001B[33m"+eventDesc+"\u001B[0m");
+        TicketEvent newEvent = new TicketEvent(EventType.PRODUCED, eventDesc, ticketPool.getSize());
         publisher.sendEvent(newEvent);
     }
 
+    /**
+     * prints the details of the tickets produced by this vendor.
+     */
     public void printProducedTicketInfo() {
         System.out.println("tickets produced by "+name);
         for (Ticket ticket: producedTickets) System.out.println(ticket);

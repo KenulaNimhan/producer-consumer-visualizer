@@ -14,9 +14,7 @@ public class Customer extends Thread {
     private final String name;
     private final int ticketCap;
     private final List<Ticket> purchasedTickets = new ArrayList<>();
-    private int purchasedCount=0;
     private final TicketEventPublisher publisher;
-
     private final TicketPool ticketPool;
 
     public Customer(String name, int ticketCap, TicketPool ticketPool, TicketEventPublisher publisher) {
@@ -27,7 +25,7 @@ public class Customer extends Thread {
     }
 
     public boolean hasReachedLimit() {
-        return purchasedCount == ticketCap;
+        return purchasedTickets.size() == ticketCap;
     }
 
     /**
@@ -37,18 +35,21 @@ public class Customer extends Thread {
     public void buyTicket() throws Exception {
         if (hasReachedLimit()) throw new Exception("cannot buy more tickets.");
         var boughtTicket = ticketPool.removeTicket();
-        boughtTicket.setBoughtBuy(Thread.currentThread().getName());
+        boughtTicket.setBoughtBy(Thread.currentThread().getName());
         purchasedTickets.addLast(boughtTicket);
-        purchasedCount++;
 
-        System.out.println("\u001B[34m"+name+" bought ticket "+boughtTicket.getId()+" at "+boughtTicket.getProducedTime()+"\u001B[0m");
-        TicketEvent newEvent = new TicketEvent(EventType.CONSUMED, boughtTicket, ticketPool.getSize());
+        String eventDesc = name+" bought ticket "+boughtTicket.getId()+" at "+boughtTicket.getProducedTime();
+        System.out.println("\u001B[34m"+eventDesc+"\u001B[0m");
+        TicketEvent newEvent = new TicketEvent(EventType.CONSUMED, eventDesc, ticketPool.getSize());
         publisher.sendEvent(newEvent);
     }
 
+    /**
+     * prints the details of the tickets purchased by this consumer.
+     */
     public void printBoughtTicketInfo() {
         System.out.println("tickets bought by "+name);
-        System.out.println(purchasedCount);
+        System.out.println(purchasedTickets.size());
         for (Ticket ticket: purchasedTickets) System.out.print(ticket);
     }
 
