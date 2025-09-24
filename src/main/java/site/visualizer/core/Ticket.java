@@ -7,7 +7,7 @@ public class Ticket {
     private static final AtomicInteger count = new AtomicInteger();
 
     private final String id, producedAt, producedBy;
-    private String boughtBuy;
+    private String boughtBy, boughtAt;
 
     public Ticket() {
         id = String.valueOf(count.incrementAndGet());
@@ -29,24 +29,46 @@ public class Ticket {
         return producedBy;
     }
 
-    public String getBoughtBuy() {
-        return boughtBuy;
+    public String getProducedAt() {
+        return producedAt;
+    }
+
+    public String getBoughtBy() {
+        return boughtBy;
+    }
+
+    public String getBoughtAt() {
+        return boughtAt;
     }
 
     // SETTERS
 
     /**
      * this method is used for setting the customer's name in the ticket after purchase.
-     * @param boughtBuy name of the customer thread, which is the name of the Customer itself.
+     * @param boughtBy name of the customer thread, which is the name of the Customer itself.
      */
-    public void setBoughtBuy(String boughtBuy) {
-        this.boughtBuy = boughtBuy;
+    public void setBoughtBy(String boughtBy) {
+        this.boughtBy = boughtBy;
+    }
+
+    public void setBoughtAt(String boughtAt) {
+        this.boughtAt = boughtAt;
+    }
+
+    // OTHER METHODS
+
+    public String getProducedStatement() {
+        return String.format("%s produced ticket %s at %s", producedBy, id, producedAt);
+    }
+
+    public String getConsumedStatement() {
+        return String.format("%s bought ticket %s at %s", boughtBy, id, boughtAt);
     }
 
     /**
      * prints a detailed view of the ticket
      * details include who produced the ticket, and at what time.
-     * @return
+     * @return details of ticket
      */
     @Override
     public String toString() {
