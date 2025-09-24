@@ -3,11 +3,15 @@ package site.visualizer.run;
 import org.springframework.stereotype.Service;
 import site.visualizer.config.Config;
 import site.visualizer.config.Configuration;
+import site.visualizer.core.Ticket;
 import site.visualizer.core.TicketPool;
+import site.visualizer.event.EventType;
+import site.visualizer.event.TicketEvent;
 import site.visualizer.threads.Customer;
 import site.visualizer.threads.Vendor;
 import site.visualizer.event.TicketEventPublisher;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +30,11 @@ public class VisualizerRun {
         this.ticketPool = ticketPool;
     }
 
+    /**
+     * checks if the configuration object only contains values within defined range.
+     * @param configuration data sent by the client
+     * @return "ok" if valid.
+     */
     public String accept(Configuration configuration) {
 
         Map<Config, Supplier<Integer>> configGetters = Map.of(
@@ -40,31 +49,85 @@ public class VisualizerRun {
 
         for (Config config: Config.values()) {
             var receivedValue = configGetters.get(config).get();
-            if (!config.rangeAccepts(receivedValue)) return config+" value is wrong";
+            if (!config.rangeAccepts(receivedValue)) return config+" value is invalid";
         }
 
         return "ok";
     }
 
+    public Runnable getProducerRunnable(int quota) {
+        return () -> {
+            for (int i=0; i<quota; i++) {
+                try {
+                    // producing and adding ticket to ticket pool
+                    Ticket newTicket = new Ticket();
+                    ticketPool.addTicket(newTicket);
+
+                    // creating event and publishing it to websocket queue
+                    TicketEvent event = new TicketEvent(
+                            EventType.PRODUCED,
+                            newTicket.getProducedStatement(),
+                            ticketPool.getSize()
+                    );
+                    publisher.sendEvent(event);
+
+                    // small delay to make operations more visible
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+    }
+
+    public Runnable getConsumerRunnable(int cap) {
+        return () -> {
+            for (int i=0; i<cap; i++) {
+                try {
+                    // consuming ticket from ticket pool
+                    Ticket ticket = ticketPool.removeTicket();
+                    ticket.setBoughtBy(Thread.currentThread().getName());
+                    ticket.setBoughtAt(String.valueOf(LocalTime.now()));
+
+                    // creating event and publishing it to websocket queue
+                    TicketEvent event = new TicketEvent(
+                            EventType.CONSUMED,
+                            ticket.getConsumedStatement(),
+                            ticketPool.getSize()
+                    );
+                    publisher.sendEvent(event);
+
+                    // small delay to make operations more visible
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+    }
+
+    /**
+     * runs the configuration under simulation
+     * @param data validated and accepted configuration
+     * @throws InterruptedException if any thread gets interrupted
+     */
     public void run(Configuration data) throws InterruptedException {
-        Vendor[] vendors = new Vendor[data.getVendorCount()];
+
+        Thread[] vendors = new Thread[data.getVendorCount()];
+        Thread[] customers = new Thread[data.getCustomerCount()];
+
+        int baseForVendors = data.getTotalNoOfTickets() / data.getVendorCount();
+        int extraForVendors = data.getTotalNoOfTickets() % data.getVendorCount();
 
         for (int i=0; i<data.getVendorCount(); i++) {
             int vendorID = i+1;
-            vendors[i] = new Vendor(
-                    "vendor "+vendorID,
-                    data.getTotalNoOfTickets()/data.getVendorCount(),
-                    ticketPool, publisher);
+            vendors[i] = new Thread(getProducerRunnable(baseForVendors), "Vendor "+vendorID);
         }
 
-        Customer[] customers = new Customer[data.getCustomerCount()];
 
         for (int i=0; i<data.getCustomerCount(); i++) {
             int customerID = i+1;
-            customers[i] = new Customer(
-                    "customer "+customerID,
-                    data.getCapPerCustomer(),
-                    ticketPool, publisher);
+            customers[i] = new Thread(getConsumerRunnable(data.getCapPerCustomer()), "Customer "+customerID);
         }
 
         Collections.addAll(threadPool, vendors);
