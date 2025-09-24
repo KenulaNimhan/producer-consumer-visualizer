@@ -2,13 +2,10 @@ package site.visualizer;
 
 import site.visualizer.config.Configuration;
 import site.visualizer.config.Configurator;
-import site.visualizer.threads.Customer;
 import site.visualizer.core.TicketPool;
-import site.visualizer.threads.Vendor;
+import site.visualizer.core.TicketSystemCoordinator;
+import site.visualizer.run.VisualizerRun;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -19,31 +16,14 @@ public class Main {
         Configurator configurator = new Configurator();
         Configuration data = configurator.configure();
 
+        int totalToConsume = data.getCustomerCount() * data.getCapPerCustomer();
+        TicketSystemCoordinator coordinator = new TicketSystemCoordinator(data.getTotalNoOfTickets(), totalToConsume);
         TicketPool ticketPool = new TicketPool(data.getBufferCap());
 
-        Vendor[] vendors = new Vendor[data.getVendorCount()];
+        VisualizerRun service = new VisualizerRun(ticketPool, coordinator);
 
-        for (int i=0; i<data.getVendorCount(); i++) {
-            int vendorID = i+1;
-            vendors[i] = new Vendor("vendor "+vendorID, data.getTotalNoOfTickets()/data.getVendorCount(), ticketPool, null);
-        }
-
-        Customer[] customers = new Customer[data.getCustomerCount()];
-
-        for (int i=0; i<data.getCustomerCount(); i++) {
-            int customerID = i+1;
-            customers[i] = new Customer("customer "+customerID, data.getCapPerCustomer(), ticketPool, null);
-        }
-
-        List<Thread> threads = new ArrayList<>();
-        Collections.addAll(threads, vendors);
-        Collections.addAll(threads, customers);
-        Collections.shuffle(threads);
-
-        for (Thread thread: threads) thread.start();
-        for (Thread thread: threads) thread.join();
-
-        ticketPool.printTicketsInPool();
+        service.run(data);
+        coordinator.printResults();
 
     }
 }

@@ -20,4 +20,11 @@ public class TicketSystemCoordinator {
     public boolean isProductionDone() {return totalProduced.get() == totalToProduce;}
 
     public boolean isConsumptionDone() {return totalConsumed.get() == totalToConsume;}
+
+    public void printResults() {
+        System.out.printf("""
+                Produced = %s out of %s
+                Consumed = %s out of %s
+                """,totalProduced, totalToProduce, totalConsumed, totalToConsume);
+    }
 }
