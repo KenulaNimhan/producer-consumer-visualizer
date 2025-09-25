@@ -4,7 +4,7 @@ import site.visualizer.core.Ticket;
 import site.visualizer.core.TicketPool;
 import site.visualizer.event.EventType;
 import site.visualizer.event.TicketEvent;
-import site.visualizer.event.TicketEventPublisher;
+import site.visualizer.event.EventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +14,10 @@ public class Customer extends Thread {
     private final String name;
     private final int ticketCap;
     private final List<Ticket> purchasedTickets = new ArrayList<>();
-    private final TicketEventPublisher publisher;
+    private final EventPublisher publisher;
     private final TicketPool ticketPool;
 
-    public Customer(String name, int ticketCap, TicketPool ticketPool, TicketEventPublisher publisher) {
+    public Customer(String name, int ticketCap, TicketPool ticketPool, EventPublisher publisher) {
         this.name = name;
         this.ticketCap = ticketCap;
         this.ticketPool = ticketPool;

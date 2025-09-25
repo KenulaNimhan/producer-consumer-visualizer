@@ -4,7 +4,7 @@ import site.visualizer.core.Ticket;
 import site.visualizer.core.TicketPool;
 import site.visualizer.event.EventType;
 import site.visualizer.event.TicketEvent;
-import site.visualizer.event.TicketEventPublisher;
+import site.visualizer.event.EventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +14,9 @@ public class Vendor extends Thread {
     private final List<Ticket> producedTickets = new ArrayList<>();
     private final int quota;
     private final TicketPool ticketPool;
-    private final TicketEventPublisher publisher;
+    private final EventPublisher publisher;
 
-    public Vendor(String name, int quota, TicketPool ticketPool, TicketEventPublisher publisher) {
+    public Vendor(String name, int quota, TicketPool ticketPool, EventPublisher publisher) {
         this.name = name;
         this.quota = quota;
         this.ticketPool = ticketPool;
