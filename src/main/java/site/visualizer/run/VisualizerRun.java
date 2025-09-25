@@ -48,7 +48,7 @@ public class VisualizerRun {
     public String accept(Configuration configuration) {
 
         Map<Config, Supplier<Integer>> configGetters = Map.of(
-                Config.TOTAL_TICKETS, configuration::getTotalNoOfTickets,
+                Config.TOTAL_TICKETS, configuration::getTotalTickets,
                 Config.BUFFER_CAP, configuration::getBufferCap,
                 Config.VENDOR_COUNT, configuration::getVendorCount,
                 Config.CUSTOMER_COUNT, configuration::getCustomerCount,
@@ -64,7 +64,7 @@ public class VisualizerRun {
 
         this.ticketPool = new TicketPool(configuration.getBufferCap());
         int totalConsumableAmount = configuration.getCustomerCount() * configuration.getCapPerCustomer();
-        this.coordinator = new TicketSystemCoordinator(configuration.getTotalNoOfTickets(), totalConsumableAmount);
+        this.coordinator = new TicketSystemCoordinator(configuration.getTotalTickets(), totalConsumableAmount);
 
         return "ok";
     }
@@ -132,7 +132,7 @@ public class VisualizerRun {
                     // consuming ticket from ticket pool
                     Ticket ticket = ticketPool.removeTicket();
                     if (ticket == null) {
-                        // since a ticket remove was unsuccessful i is decremented
+                        // since a ticket remove was unsuccessful, 'i' is decremented
                         i--;
                         continue;
                     }
@@ -167,8 +167,8 @@ public class VisualizerRun {
         Thread[] vendors = new Thread[data.getVendorCount()];
         Thread[] customers = new Thread[data.getCustomerCount()];
 
-        int baseForVendors = data.getTotalNoOfTickets() / data.getVendorCount();
-        int extraForVendors = data.getTotalNoOfTickets() % data.getVendorCount();
+        int baseForVendors = data.getTotalTickets() / data.getVendorCount();
+        int extraForVendors = data.getTotalTickets() % data.getVendorCount();
 
         for (int i=1; i<=data.getVendorCount(); i++) {
             int quota = baseForVendors;

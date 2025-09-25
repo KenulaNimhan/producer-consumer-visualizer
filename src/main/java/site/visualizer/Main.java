@@ -17,7 +17,7 @@ public class Main {
         Configuration data = configurator.configure();
 
         int totalToConsume = data.getCustomerCount() * data.getCapPerCustomer();
-        TicketSystemCoordinator coordinator = new TicketSystemCoordinator(data.getTotalNoOfTickets(), totalToConsume);
+        TicketSystemCoordinator coordinator = new TicketSystemCoordinator(data.getTotalTickets(), totalToConsume);
         TicketPool ticketPool = new TicketPool(data.getBufferCap());
 
         VisualizerRun service = new VisualizerRun(ticketPool, coordinator);

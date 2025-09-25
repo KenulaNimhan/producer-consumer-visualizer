@@ -13,7 +13,7 @@ public class Configurator {
     private final Configuration configuration = new Configuration();
 
     private final Map<Config, Consumer<Integer>> configSetters = Map.of(
-            Config.TOTAL_TICKETS, configuration::setTotalNoOfTickets,
+            Config.TOTAL_TICKETS, configuration::setTotalTickets,
             Config.BUFFER_CAP, configuration::setBufferCap,
             Config.VENDOR_COUNT, configuration::setVendorCount,
             Config.CUSTOMER_COUNT, configuration::setCustomerCount,

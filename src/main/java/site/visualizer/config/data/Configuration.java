@@ -2,7 +2,7 @@ package site.visualizer.config.data;
 
 public class Configuration {
     private int
-            totalNoOfTickets,
+            totalTickets,
             bufferCap,
             vendorCount,
             customerCount,
@@ -14,8 +14,8 @@ public class Configuration {
 
     // GETTERS
 
-    public int getTotalNoOfTickets() {
-        return totalNoOfTickets;
+    public int getTotalTickets() {
+        return totalTickets;
     }
 
     public int getBufferCap() {
@@ -44,8 +44,8 @@ public class Configuration {
 
     // SETTERS
 
-    public void setTotalNoOfTickets(int totalNoOfTickets) {
-        this.totalNoOfTickets = totalNoOfTickets;
+    public void setTotalTickets(int totalTickets) {
+        this.totalTickets = totalTickets;
     }
 
     public void setBufferCap(int bufferCap) {
@@ -74,6 +74,6 @@ public class Configuration {
 
     // HELPER METHOD
     public boolean isValid() {
-        return (customerCount*capPerCustomer) <= totalNoOfTickets;
+        return (customerCount*capPerCustomer) <= totalTickets;
     }
 }
