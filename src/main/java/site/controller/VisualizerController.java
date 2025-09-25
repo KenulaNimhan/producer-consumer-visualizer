@@ -1,35 +1,42 @@
 package site.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.stereotype.Controller;
 import site.visualizer.config.Configuration;
+import site.visualizer.event.EventPublisher;
 import site.visualizer.run.VisualizerRun;
 
-@RestController
-@RequestMapping("api")
+@Controller
 public class VisualizerController {
 
     private final VisualizerRun service;
+    private final EventPublisher publisher;
 
-    public VisualizerController(VisualizerRun service) {
+    public VisualizerController(VisualizerRun service, EventPublisher publisher) {
         this.service = service;
+        this.publisher = publisher;
     }
 
-    @PostMapping("start")
-    public ResponseEntity<String> runVisualizer(@RequestBody Configuration configuration) throws InterruptedException {
+    /**
+     * starts the visualizer if the config is correct or else an error message is sent.
+     * @param configuration of client.
+     */
+    @MessageMapping("/start")
+    public void establishConnectionAndStart(Configuration configuration) {
         String response = service.accept(configuration);
+        System.out.println(response);
         if (response.equals("ok")) {
             service.run(configuration);
-            return ResponseEntity.ok("configuration is successful and running");
         } else {
-            return ResponseEntity.internalServerError().body(response);
+            publisher.sendError(response);
         }
     }
 
-    @PostMapping("stop")
-    public ResponseEntity<String> stopVisualizer() {
+    /**
+     * stops the visualizer by interrupting all threads.
+     */
+    @MessageMapping("/stop")
+    public void stop() {
         service.stop();
-        return ResponseEntity.ok("visualizer stopped");
     }
-
 }
