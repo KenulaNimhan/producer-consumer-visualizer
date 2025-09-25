@@ -1,4 +1,4 @@
-package site.visualizer.config;
+package site.visualizer.config.data;
 
 import java.util.InputMismatchException;
 import java.util.Map;

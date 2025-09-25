@@ -1,8 +1,8 @@
-package site.controller;
+package site.visualizer.controller;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
-import site.visualizer.config.Configuration;
+import site.visualizer.config.data.Configuration;
 import site.visualizer.event.EventPublisher;
 import site.visualizer.run.VisualizerRun;
 

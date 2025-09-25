@@ -1,7 +1,7 @@
 package site.visualizer;
 
-import site.visualizer.config.Configuration;
-import site.visualizer.config.Configurator;
+import site.visualizer.config.data.Configuration;
+import site.visualizer.config.data.Configurator;
 import site.visualizer.core.TicketPool;
 import site.visualizer.core.TicketSystemCoordinator;
 import site.visualizer.run.VisualizerRun;

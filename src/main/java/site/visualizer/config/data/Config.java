@@ -1,4 +1,4 @@
-package site.visualizer.config;
+package site.visualizer.config.data;
 
 public enum Config {
     TOTAL_TICKETS("Total no. of tickets to produce: ", 1, 100),

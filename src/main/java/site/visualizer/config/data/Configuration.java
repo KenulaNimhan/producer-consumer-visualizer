@@ -1,4 +1,4 @@
-package site.visualizer.config;
+package site.visualizer.config.data;
 
 public class Configuration {
     private int

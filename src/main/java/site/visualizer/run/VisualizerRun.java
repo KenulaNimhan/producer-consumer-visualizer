@@ -2,8 +2,8 @@ package site.visualizer.run;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import site.visualizer.config.Config;
-import site.visualizer.config.Configuration;
+import site.visualizer.config.data.Config;
+import site.visualizer.config.data.Configuration;
 import site.visualizer.core.Ticket;
 import site.visualizer.core.TicketPool;
 import site.visualizer.core.TicketSystemCoordinator;
