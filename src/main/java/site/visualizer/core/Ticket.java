@@ -45,7 +45,7 @@ public class Ticket {
 
     /**
      * this method is used for setting the customer's name in the ticket after purchase.
-     * @param boughtBy name of the customer thread, which is the name of the Customer itself.
+     * @param boughtBy name of the customer thread.
      */
     public void setBoughtBy(String boughtBy) {
         this.boughtBy = boughtBy;
@@ -57,10 +57,16 @@ public class Ticket {
 
     // OTHER METHODS
 
+    /**
+     * @return a string containing details including producer thread name and produced time.
+     */
     public String getProducedStatement() {
         return String.format("%s produced ticket %s at %s", producedBy, id, producedAt);
     }
 
+    /**
+     * @return a string containing details including consumer thread name and consumed time.
+     */
     public String getConsumedStatement() {
         return String.format("%s bought ticket %s at %s", boughtBy, id, boughtAt);
     }

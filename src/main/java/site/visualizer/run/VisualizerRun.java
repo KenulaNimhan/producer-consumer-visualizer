@@ -1,5 +1,6 @@
 package site.visualizer.run;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import site.visualizer.config.Config;
 import site.visualizer.config.Configuration;
@@ -8,7 +9,7 @@ import site.visualizer.core.TicketPool;
 import site.visualizer.core.TicketSystemCoordinator;
 import site.visualizer.event.EventType;
 import site.visualizer.event.TicketEvent;
-import site.visualizer.event.TicketEventPublisher;
+import site.visualizer.event.EventPublisher;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -20,11 +21,12 @@ import java.util.function.Supplier;
 @Service
 public class VisualizerRun {
 
-    private final TicketEventPublisher publisher;
-    private final TicketPool ticketPool;
-    private final TicketSystemCoordinator coordinator;
-
+    private final EventPublisher publisher;
     private final List<Thread> threadPool = new ArrayList<>();
+
+    private TicketPool ticketPool;
+    private TicketSystemCoordinator coordinator;
+
 
     // used for console level usage. should remove in prod.
     public VisualizerRun(TicketPool ticketPool, TicketSystemCoordinator coordinator) {
@@ -33,10 +35,9 @@ public class VisualizerRun {
         this.coordinator = coordinator;
     }
 
-    public VisualizerRun(TicketEventPublisher publisher, TicketPool ticketPool, TicketSystemCoordinator coordinator) {
+    @Autowired
+    public VisualizerRun(EventPublisher publisher) {
         this.publisher = publisher;
-        this.ticketPool = ticketPool;
-        this.coordinator = coordinator;
     }
 
     /**
@@ -60,6 +61,10 @@ public class VisualizerRun {
             var receivedValue = configGetters.get(config).get();
             if (!config.rangeAccepts(receivedValue)) return config+" value is invalid";
         }
+
+        this.ticketPool = new TicketPool(configuration.getBufferCap());
+        int totalConsumableAmount = configuration.getCustomerCount() * configuration.getCapPerCustomer();
+        this.coordinator = new TicketSystemCoordinator(configuration.getTotalNoOfTickets(), totalConsumableAmount);
 
         return "ok";
     }
@@ -91,11 +96,11 @@ public class VisualizerRun {
                                 newTicket.getProducedStatement(),
                                 ticketPool.getSize()
                         );
-//                    publisher.sendEvent(event);
-                        System.out.println(newTicket.getProducedStatement());
+                        if (publisher != null) publisher.sendEvent(event);
+                    System.out.println(newTicket.getProducedStatement());
 
-                        // small delay to make operations more visible
-                        Thread.sleep(1000);
+                    // small delay to make operations more visible
+                    Thread.sleep(1000);
                     } else {
                         i--;
                     }
@@ -140,7 +145,7 @@ public class VisualizerRun {
                             ticket.getConsumedStatement(),
                             ticketPool.getSize()
                     );
-//                    publisher.sendEvent(event);
+                    if (publisher != null) publisher.sendEvent(event);
                     System.out.println(ticket.getConsumedStatement());
 
                     // small delay to make operations more visible
@@ -156,9 +161,8 @@ public class VisualizerRun {
     /**
      * runs the configuration under simulation
      * @param data validated and accepted configuration
-     * @throws InterruptedException if any thread gets interrupted
      */
-    public void run(Configuration data) throws InterruptedException {
+    public void run(Configuration data) {
 
         Thread[] vendors = new Thread[data.getVendorCount()];
         Thread[] customers = new Thread[data.getCustomerCount()];
@@ -182,7 +186,12 @@ public class VisualizerRun {
         Collections.shuffle(threadPool); // mixing vendor and customer threads
 
         for (Thread thread: threadPool) thread.start();
-        for (Thread thread: threadPool) thread.join();
+
+        try {
+            for (Thread thread: threadPool) thread.join();
+        } catch (InterruptedException e) {
+            System.out.println("error when joining threads");
+        }
     }
 
     public void stop() {
