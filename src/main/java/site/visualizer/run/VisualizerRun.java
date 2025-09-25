@@ -191,9 +191,14 @@ public class VisualizerRun {
             for (Thread thread: threadPool) thread.join();
         } catch (InterruptedException e) {
             System.out.println("error when joining threads");
+        } finally {
+            Ticket.resetCount();
         }
     }
 
+    /**
+     * stops the simulation by interrupting all threads.
+     */
     public void stop() {
         for (Thread thread: threadPool) {
             thread.interrupt();

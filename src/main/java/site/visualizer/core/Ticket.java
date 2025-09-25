@@ -71,6 +71,10 @@ public class Ticket {
         return String.format("%s bought ticket %s at %s", boughtBy, id, boughtAt);
     }
 
+    public static void resetCount() {
+        count.set(0);
+    }
+
     /**
      * prints a detailed view of the ticket
      * details include who produced the ticket, and at what time.
