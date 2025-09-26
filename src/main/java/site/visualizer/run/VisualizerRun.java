@@ -27,7 +27,6 @@ public class VisualizerRun {
     private TicketPool ticketPool;
     private TicketSystemCoordinator coordinator;
 
-
     // used for console level usage. should remove in prod.
     public VisualizerRun(TicketPool ticketPool, TicketSystemCoordinator coordinator) {
         this.publisher = null;
@@ -163,6 +162,9 @@ public class VisualizerRun {
      * @param data validated and accepted configuration
      */
     public void run(Configuration data) {
+
+        // clearing old threads
+        threadPool.clear();
 
         Thread[] vendors = new Thread[data.getVendorCount()];
         Thread[] customers = new Thread[data.getCustomerCount()];
