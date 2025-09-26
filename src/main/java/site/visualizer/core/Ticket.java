@@ -1,17 +1,19 @@
 package site.visualizer.core;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Ticket {
     private static final AtomicInteger count = new AtomicInteger();
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm:ss.SSS");
 
     private final String id, producedAt, producedBy;
     private String boughtBy, boughtAt;
 
     public Ticket() {
         id = String.valueOf(count.incrementAndGet());
-        producedAt = String.valueOf(LocalTime.now());
+        producedAt = formatter.format(LocalTime.now());
         producedBy = Thread.currentThread().getName();
     }
 
@@ -51,8 +53,8 @@ public class Ticket {
         this.boughtBy = boughtBy;
     }
 
-    public void setBoughtAt(String boughtAt) {
-        this.boughtAt = boughtAt;
+    public void setBoughtAt(LocalTime boughtTime) {
+        this.boughtAt = formatter.format(boughtTime);
     }
 
     // OTHER METHODS
@@ -61,14 +63,14 @@ public class Ticket {
      * @return a string containing details including producer thread name and produced time.
      */
     public String getProducedStatement() {
-        return String.format("%s produced ticket %s at %s", producedBy, id, producedAt);
+        return String.format("%s : %s produced ticket %s", producedAt, producedBy, id);
     }
 
     /**
      * @return a string containing details including consumer thread name and consumed time.
      */
     public String getConsumedStatement() {
-        return String.format("%s bought ticket %s at %s", boughtBy, id, boughtAt);
+        return String.format("%s %s bought ticket %s", boughtAt, boughtBy, id);
     }
 
     public static void resetCount() {

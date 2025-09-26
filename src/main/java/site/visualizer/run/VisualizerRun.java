@@ -136,7 +136,7 @@ public class VisualizerRun {
                         continue;
                     }
                     ticket.setBoughtBy(Thread.currentThread().getName());
-                    ticket.setBoughtAt(String.valueOf(LocalTime.now()));
+                    ticket.setBoughtAt(LocalTime.now());
                     coordinator.incrementConsumedCount();
                     // creating event and publishing it to websocket queue
                     TicketEvent event = new TicketEvent(
