@@ -77,6 +77,10 @@ public class Ticket {
         count.set(0);
     }
 
+    public static void decrementTicketCount() {
+        count.getAndDecrement();
+    }
+
     /**
      * prints a detailed view of the ticket
      * details include who produced the ticket, and at what time.
