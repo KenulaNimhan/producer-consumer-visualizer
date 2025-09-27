@@ -6,8 +6,8 @@ public enum Config {
     VENDOR_COUNT("No. of vendors producing: ", 1, 10),
     CUSTOMER_COUNT("No. of customers buying: ", 1, 10),
     CAP_PER_CUSTOMER("Maximum no. of tickets per customer: ", 1, 10),
-    RELEASE_RATE("Rate of releasing tickets: ", 1, 10),
-    RETRIEVAL_RATE("Rate of consuming tickets: ",1,10);
+    RELEASE_RATE("Rate of releasing tickets: ", 100, 2000),
+    RETRIEVAL_RATE("Rate of consuming tickets: ",100,2000);
 
     private final String prompt;
     private final int[] range = new int[2];

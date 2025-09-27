@@ -41,7 +41,7 @@ public class VisualizerRun {
 
     /**
      * checks if the configuration object only contains values within defined range.
-     * @param configuration data sent by the client
+     * @param configuration data sent by the client.
      * @return "ok" if valid.
      */
     public String accept(Configuration configuration) {
@@ -71,8 +71,9 @@ public class VisualizerRun {
     /**
      * returns the runnable for producers.
      * @param quota - no. of tickets allocated for the producer.
+     * @param releaseRate - time in milliseconds to pause the thread.
      */
-    public Runnable getProducerRunnable(int quota) {
+    public Runnable getProducerRunnable(int quota, int releaseRate) {
         return () -> {
             for (int i=0; i<quota; i++) {
                 try {
@@ -81,7 +82,9 @@ public class VisualizerRun {
 
                     // checking if consumption is complete
                     if (coordinator.isConsumptionDone()) {
-                        System.out.println(Thread.currentThread().getName()+" closes since consumption is complete");
+                        String msg = Thread.currentThread().getName()+" closes since consumption is complete";
+                        System.out.println(msg);
+                        publisher.sendEvent(new TicketEvent(EventType.PRODUCED, msg, ticketPool.getSize()));
                         break;
                     }
 
@@ -98,10 +101,11 @@ public class VisualizerRun {
                         if (publisher != null) publisher.sendEvent(event);
                     System.out.println(newTicket.getProducedStatement());
 
-                    // small delay to make operations more visible
-                    Thread.sleep(1000);
+                    // applying release rate of tickets
+                    Thread.sleep(releaseRate);
                     } else {
                         i--;
+                        Ticket.decrementTicketCount();
                     }
                 } catch (InterruptedException e) {
                     System.out.println(Thread.currentThread().getName()+" interrupted. Shutting down...");
@@ -114,8 +118,9 @@ public class VisualizerRun {
     /**
      * returns the runnable for the consumers.
      * @param cap - ticket cap per consumer.
+     * @param retrievalRate - time in milliseconds to pause the thread
      */
-    public Runnable getConsumerRunnable(int cap) {
+    public Runnable getConsumerRunnable(int cap, int retrievalRate) {
         return () -> {
             for (int i=0; i<cap; i++) {
                 try {
@@ -124,7 +129,9 @@ public class VisualizerRun {
 
                     // checking if production is complete
                     if (coordinator.isProductionDone() && ticketPool.isEmpty()) {
-                        System.out.println(Thread.currentThread().getName()+" closes since production is complete");
+                        String msg = Thread.currentThread().getName()+" closes since production is complete";
+                        System.out.println(msg);
+                        publisher.sendEvent(new TicketEvent(EventType.CONSUMED, msg, ticketPool.getSize()));
                         break;
                     }
 
@@ -147,8 +154,8 @@ public class VisualizerRun {
                     if (publisher != null) publisher.sendEvent(event);
                     System.out.println(ticket.getConsumedStatement());
 
-                    // small delay to make operations more visible
-                    Thread.sleep(1000);
+                    // applying retrieval rate of tickets
+                    Thread.sleep(retrievalRate);
                 } catch (InterruptedException e) {
                     System.out.println(Thread.currentThread().getName()+" interrupted. Shutting down...");
                     break; // exiting loop and then terminate after being interrupted
@@ -165,6 +172,8 @@ public class VisualizerRun {
 
         // clearing old threads
         threadPool.clear();
+        // resetting ticket count
+        Ticket.resetCount();
 
         Thread[] vendors = new Thread[data.getVendorCount()];
         Thread[] customers = new Thread[data.getCustomerCount()];
@@ -175,12 +184,12 @@ public class VisualizerRun {
         for (int i=1; i<=data.getVendorCount(); i++) {
             int quota = baseForVendors;
             if (i <= extraForVendors) quota++;
-            vendors[i-1] = new Thread(getProducerRunnable(quota), "Vendor "+i);
+            vendors[i-1] = new Thread(getProducerRunnable(quota, data.getReleaseRate()), "Vendor "+i);
         }
 
 
         for (int i=1; i<=data.getCustomerCount(); i++) {
-            customers[i-1] = new Thread(getConsumerRunnable(data.getCapPerCustomer()), "Customer "+i);
+            customers[i-1] = new Thread(getConsumerRunnable(data.getCapPerCustomer(), data.getRetrievalRate()), "Customer "+i);
         }
 
         Collections.addAll(threadPool, vendors);
@@ -193,8 +202,6 @@ public class VisualizerRun {
             for (Thread thread: threadPool) thread.join();
         } catch (InterruptedException e) {
             System.out.println("error when joining threads");
-        } finally {
-            Ticket.resetCount();
         }
     }
 
@@ -205,6 +212,5 @@ public class VisualizerRun {
         for (Thread thread: threadPool) {
             thread.interrupt();
         }
-        threadPool.clear();
     }
 }
