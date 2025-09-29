@@ -8,11 +8,10 @@ public class Ticket {
     private static final AtomicInteger count = new AtomicInteger();
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm:ss.SSS");
 
-    private final String id, producedAt, producedBy;
-    private String boughtBy, boughtAt;
+    private final String producedAt, producedBy;
+    private String id, boughtBy, boughtAt;
 
     public Ticket() {
-        id = String.valueOf(count.incrementAndGet());
         producedAt = formatter.format(LocalTime.now());
         producedBy = Thread.currentThread().getName();
     }
@@ -58,6 +57,17 @@ public class Ticket {
     }
 
     // OTHER METHODS
+
+    public boolean isIdAssigned() {
+        return id != null;
+    }
+
+    /**
+     * used to assign id only after the ticket is successfully added to the pool.
+     */
+    public void assignId() {
+        id = String.valueOf(count.incrementAndGet());
+    }
 
     /**
      * @return a string containing details including producer thread name and produced time.

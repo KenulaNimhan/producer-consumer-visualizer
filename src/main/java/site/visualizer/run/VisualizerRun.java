@@ -91,6 +91,7 @@ public class VisualizerRun {
                     // producing and adding ticket to ticket pool
                     Ticket newTicket = new Ticket();
                     if (ticketPool.addTicket(newTicket)) {
+                        newTicket.assignId();
                         coordinator.incrementProducedCount();
                         // creating event and publishing it to websocket queue
                         TicketEvent event = new TicketEvent(
@@ -105,7 +106,6 @@ public class VisualizerRun {
                     Thread.sleep(releaseRate);
                     } else {
                         i--;
-                        Ticket.decrementTicketCount();
                     }
                 } catch (InterruptedException e) {
                     System.out.println(Thread.currentThread().getName()+" interrupted. Shutting down...");
@@ -137,7 +137,7 @@ public class VisualizerRun {
 
                     // consuming ticket from ticket pool
                     Ticket ticket = ticketPool.removeTicket();
-                    if (ticket == null) {
+                    if (ticket == null || !ticket.isIdAssigned()) {
                         // since a ticket remove was unsuccessful, 'i' is decremented
                         i--;
                         continue;
@@ -203,6 +203,8 @@ public class VisualizerRun {
         } catch (InterruptedException e) {
             System.out.println("error when joining threads");
         }
+
+        publisher.sendEvent(new TicketEvent(EventType.END, "done", ticketPool.getSize()));
     }
 
     /**
