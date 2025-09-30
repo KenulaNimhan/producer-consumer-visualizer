@@ -1,71 +1,36 @@
-package site.visualizer.run;
+package site.visualizer.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import site.visualizer.config.data.Config;
 import site.visualizer.config.data.Configuration;
 import site.visualizer.core.Ticket;
 import site.visualizer.core.TicketPool;
 import site.visualizer.core.TicketSystemCoordinator;
-import site.visualizer.event.EventType;
-import site.visualizer.event.TicketEvent;
-import site.visualizer.event.EventPublisher;
+import site.visualizer.core.event.EventPublisher;
+import site.visualizer.core.event.EventType;
+import site.visualizer.core.event.TicketEvent;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
 
-@Service
 public class VisualizerRun {
 
     private final EventPublisher publisher;
     private final List<Thread> threadPool = new ArrayList<>();
+    private final String username;
+    private final TicketPool ticketPool;
+    private final TicketSystemCoordinator coordinator;
 
-    private TicketPool ticketPool;
-    private TicketSystemCoordinator coordinator;
-
-    // used for console level usage. should remove in prod.
-    public VisualizerRun(TicketPool ticketPool, TicketSystemCoordinator coordinator) {
-        this.publisher = null;
+    public VisualizerRun(
+            EventPublisher publisher,
+            String username,
+            TicketPool ticketPool,
+            TicketSystemCoordinator coordinator) {
+        this.publisher = publisher;
+        this.username = username;
         this.ticketPool = ticketPool;
         this.coordinator = coordinator;
-    }
 
-    @Autowired
-    public VisualizerRun(EventPublisher publisher) {
-        this.publisher = publisher;
-    }
-
-    /**
-     * checks if the configuration object only contains values within defined range.
-     * @param configuration data sent by the client.
-     * @return "ok" if valid.
-     */
-    public String accept(Configuration configuration) {
-
-        Map<Config, Supplier<Integer>> configGetters = Map.of(
-                Config.TOTAL_TICKETS, configuration::getTotalTickets,
-                Config.BUFFER_CAP, configuration::getBufferCap,
-                Config.VENDOR_COUNT, configuration::getVendorCount,
-                Config.CUSTOMER_COUNT, configuration::getCustomerCount,
-                Config.CAP_PER_CUSTOMER, configuration::getCapPerCustomer,
-                Config.RETRIEVAL_RATE, configuration::getRetrievalRate,
-                Config.RELEASE_RATE, configuration::getReleaseRate
-        );
-
-        for (Config config: Config.values()) {
-            var receivedValue = configGetters.get(config).get();
-            if (!config.rangeAccepts(receivedValue)) return config+" value is invalid";
-        }
-
-        this.ticketPool = new TicketPool(configuration.getBufferCap());
-        int totalConsumableAmount = configuration.getCustomerCount() * configuration.getCapPerCustomer();
-        this.coordinator = new TicketSystemCoordinator(configuration.getTotalTickets(), totalConsumableAmount);
-
-        return "ok";
     }
 
     /**
@@ -84,14 +49,13 @@ public class VisualizerRun {
                     if (coordinator.isConsumptionDone()) {
                         String msg = Thread.currentThread().getName()+" closes since consumption is complete";
                         System.out.println(msg);
-                        publisher.sendEvent(new TicketEvent(EventType.PRODUCED, msg, ticketPool.getSize()));
+                        publisher.sendEventToUser(username, new TicketEvent(EventType.PRODUCED, msg, ticketPool.getSize()));
                         break;
                     }
 
                     // producing and adding ticket to ticket pool
                     Ticket newTicket = new Ticket();
                     if (ticketPool.addTicket(newTicket)) {
-                        coordinator.incrementProducedCount();
                         newTicket.assignId(String.valueOf(coordinator.getTotalProduced()));
                         // creating event and publishing it to websocket queue
                         TicketEvent event = new TicketEvent(
@@ -99,7 +63,7 @@ public class VisualizerRun {
                                 newTicket.getProducedStatement(),
                                 ticketPool.getSize()
                         );
-                        if (publisher != null) publisher.sendEvent(event);
+                        if (publisher != null) publisher.sendEventToUser(username, event);
                     System.out.println(newTicket.getProducedStatement());
 
                     // applying release rate of tickets
@@ -131,7 +95,7 @@ public class VisualizerRun {
                     if (coordinator.isProductionDone() && ticketPool.isEmpty()) {
                         String msg = Thread.currentThread().getName()+" closes since production is complete";
                         System.out.println(msg);
-                        publisher.sendEvent(new TicketEvent(EventType.CONSUMED, msg, ticketPool.getSize()));
+                        publisher.sendEventToUser(username, new TicketEvent(EventType.CONSUMED, msg, ticketPool.getSize()));
                         break;
                     }
 
@@ -151,7 +115,7 @@ public class VisualizerRun {
                             ticket.getConsumedStatement(),
                             ticketPool.getSize()
                     );
-                    if (publisher != null) publisher.sendEvent(event);
+                    if (publisher != null) publisher.sendEventToUser(username, event);
                     System.out.println(ticket.getConsumedStatement());
 
                     // applying retrieval rate of tickets
@@ -202,15 +166,6 @@ public class VisualizerRun {
             System.out.println("error when joining threads");
         }
 
-        publisher.sendEvent(new TicketEvent(EventType.END, "done", ticketPool.getSize()));
-    }
-
-    /**
-     * stops the simulation by interrupting all threads.
-     */
-    public void stop() {
-        for (Thread thread: threadPool) {
-            thread.interrupt();
-        }
+        publisher.sendEventToUser(username, new TicketEvent(EventType.END, "done", ticketPool.getSize()));
     }
 }
