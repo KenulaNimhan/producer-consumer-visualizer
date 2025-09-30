@@ -91,8 +91,8 @@ public class VisualizerRun {
                     // producing and adding ticket to ticket pool
                     Ticket newTicket = new Ticket();
                     if (ticketPool.addTicket(newTicket)) {
-                        newTicket.assignId();
                         coordinator.incrementProducedCount();
+                        newTicket.assignId(String.valueOf(coordinator.getTotalProduced()));
                         // creating event and publishing it to websocket queue
                         TicketEvent event = new TicketEvent(
                                 EventType.PRODUCED,
@@ -172,8 +172,6 @@ public class VisualizerRun {
 
         // clearing old threads
         threadPool.clear();
-        // resetting ticket count
-        Ticket.resetCount();
 
         Thread[] vendors = new Thread[data.getVendorCount()];
         Thread[] customers = new Thread[data.getCustomerCount()];

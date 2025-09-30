@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Ticket {
-    private static final AtomicInteger count = new AtomicInteger();
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm:ss.SSS");
 
     private final String producedAt, producedBy;
@@ -65,8 +64,8 @@ public class Ticket {
     /**
      * used to assign id only after the ticket is successfully added to the pool.
      */
-    public void assignId() {
-        id = String.valueOf(count.incrementAndGet());
+    public void assignId(String id) {
+        this.id = id;
     }
 
     /**
@@ -81,14 +80,6 @@ public class Ticket {
      */
     public String getConsumedStatement() {
         return String.format("%s %s bought ticket %s", boughtAt, boughtBy, id);
-    }
-
-    public static void resetCount() {
-        count.set(0);
-    }
-
-    public static void decrementTicketCount() {
-        count.getAndDecrement();
     }
 
     /**

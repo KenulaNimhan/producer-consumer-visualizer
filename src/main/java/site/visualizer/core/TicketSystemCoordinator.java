@@ -13,6 +13,11 @@ public class TicketSystemCoordinator {
         this.totalToConsume = totalToConsume;
     }
 
+    // GETTER METHODS
+    public AtomicInteger getTotalProduced() {
+        return totalProduced;
+    }
+
     public void incrementProducedCount() {totalProduced.getAndIncrement();}
 
     public void incrementConsumedCount() {totalConsumed.getAndIncrement();}
