@@ -14,8 +14,8 @@ public class TicketSystemCoordinator {
     }
 
     // GETTER METHODS
-    public AtomicInteger getTotalProduced() {
-        return totalProduced;
+    public int getTotalProduced() {
+        return totalProduced.incrementAndGet();
     }
 
     public void incrementProducedCount() {totalProduced.getAndIncrement();}
