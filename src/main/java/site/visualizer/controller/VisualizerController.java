@@ -1,20 +1,18 @@
 package site.visualizer.controller;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import site.visualizer.config.data.Configuration;
-import site.visualizer.event.EventPublisher;
-import site.visualizer.run.VisualizerRun;
+import site.visualizer.service.VisualizerService;
 
 @Controller
 public class VisualizerController {
 
-    private final VisualizerRun service;
-    private final EventPublisher publisher;
+    private final VisualizerService service;
 
-    public VisualizerController(VisualizerRun service, EventPublisher publisher) {
+    public VisualizerController(VisualizerService service) {
         this.service = service;
-        this.publisher = publisher;
     }
 
     /**
@@ -22,21 +20,11 @@ public class VisualizerController {
      * @param configuration of client.
      */
     @MessageMapping("/start")
-    public void establishConnectionAndStart(Configuration configuration) {
-        String response = service.accept(configuration);
-        System.out.println(response);
-        if (response.equals("ok")) {
-            service.run(configuration);
-        } else {
-            publisher.sendError(response);
-        }
-    }
+    public void establishConnectionAndStart(Configuration configuration, SimpMessageHeaderAccessor headerAccessor) {
+        String username = headerAccessor.getSessionId();
 
-    /**
-     * stops the visualizer by interrupting all threads.
-     */
-    @MessageMapping("/stop")
-    public void stop() {
-        service.stop();
+        if (service.accept(configuration)) {
+            service.instantiateAndStart(configuration, username);
+        }
     }
 }
