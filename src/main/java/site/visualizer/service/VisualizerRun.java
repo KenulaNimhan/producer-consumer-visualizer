@@ -48,7 +48,6 @@ public class VisualizerRun {
                     // checking if consumption is complete
                     if (coordinator.isConsumptionDone()) {
                         String msg = Thread.currentThread().getName()+" closes since consumption is complete";
-                        System.out.println(msg);
                         publisher.sendEventToUser(username, new TicketEvent(EventType.PRODUCED, msg, ticketPool.getSize()));
                         break;
                     }
@@ -64,7 +63,6 @@ public class VisualizerRun {
                                 ticketPool.getSize()
                         );
                         if (publisher != null) publisher.sendEventToUser(username, event);
-                    System.out.println(newTicket.getProducedStatement());
 
                     // applying release rate of tickets
                     Thread.sleep(releaseRate);
@@ -94,7 +92,6 @@ public class VisualizerRun {
                     // checking if production is complete
                     if (coordinator.isProductionDone() && ticketPool.isEmpty()) {
                         String msg = Thread.currentThread().getName()+" closes since production is complete";
-                        System.out.println(msg);
                         publisher.sendEventToUser(username, new TicketEvent(EventType.CONSUMED, msg, ticketPool.getSize()));
                         break;
                     }
@@ -116,7 +113,6 @@ public class VisualizerRun {
                             ticketPool.getSize()
                     );
                     if (publisher != null) publisher.sendEventToUser(username, event);
-                    System.out.println(ticket.getConsumedStatement());
 
                     // applying retrieval rate of tickets
                     Thread.sleep(retrievalRate);
