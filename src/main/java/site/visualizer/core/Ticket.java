@@ -72,14 +72,14 @@ public class Ticket {
      * @return a string containing details including producer thread name and produced time.
      */
     public String getProducedStatement() {
-        return String.format("%s : %s produced ticket %s", producedAt, producedBy, id);
+        return String.format("%s produced ticket %s", producedBy, id);
     }
 
     /**
      * @return a string containing details including consumer thread name and consumed time.
      */
     public String getConsumedStatement() {
-        return String.format("%s %s bought ticket %s", boughtAt, boughtBy, id);
+        return String.format("%s bought ticket %s", boughtBy, id);
     }
 
     /**
